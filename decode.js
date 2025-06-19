@@ -13,6 +13,7 @@ const PID_TOF      = 0x12;
 
 const PID_GPS      = 0x20;
 
+const PID_FILL      = 0xC0
 
 
 function uint8( it) {
@@ -64,62 +65,86 @@ function bytes2float32( it) {
   return sign * significand * Math.pow(2, exponent);
 }
 
-function getNode( it) {
-    var data = {
-        vbat: uint16( it) / 100,
-        cputemp: int16( it) / 10
+function getSensor( it) {
+  var data = {
+		meta: uint8(it)
     };
-    //it.index += 4;
+
+    return data;
+}
+
+function getId( it) {
+  var data = getSensor( it);
+  var i=0;
+  var id = "";
+
+  for( i=0; i < 32; i++) {
+    id += chr( uint8( it));
+  }
+    data.id = id;
+
+    return data;
+}
+
+function getNode( it) {
+  var data = getSensor( it);
+
+    data.vbat = uint16( it) / 100;
+    data.cputemp = int16( it) / 10;
 
     return data;
 }
 
 function getBME( it) {
-    var data = {
-        temp: int16( it) / 10.0,
-        humidity: uint16( it) / 10.0,
-        pressure: uint16( it) / 10.0
-    };
-    //it.index += 6;
+  var data = getSensor( it);
+
+    data.temp = int16( it) / 10.0;
+    data.humidity = uint16( it) / 10.0;
+    data.pressure = uint16( it) / 10.0;
 
     return data;
 }
 
 function getOnewire( it) {
-    var data = {
-        temp: int16(it) * 0.0625
-    };
-    //it.index += 2;
+  var data = getSensor( it);
+
+    data.temp = int16(it) * 0.0625;
 
     return data;
 }
 
 function getTOF( it) {
-    var data = {
-        dist: int16(it)
-    };
-    //it.index += 2;
+  var data = getSensor( it);
+
+    data.dist = int16(it);
+
+    return data;
+}
+
+function getFill( it) {
+  var data = getSensor( it);
+
+    data.percent = uint16(it);
 
     return data;
 }
 
 function getGps( it) {
-    var data = {
-        sats: uint8(it),
-        flags: uint8(it),
+  var data = getSensor( it);
 
-        date: uint32( it),
-        time: uint32( it),
+    data.sats = uint8(it);
+    data.flags = uint8(it);
 
-        latitude: bytes2float32( it),
-        longitude: bytes2float32( it),
-        altitude: bytes2float32( it),
+    data.date = uint32( it);
+    data.time = uint32( it);
 
-        speed: bytes2float32( it),
-        course: bytes2float32( it),
-        hdop: bytes2float32( it)
-    };
-    //it.index += 34;
+    data.latitude = bytes2float32( it);
+    data.longitude = bytes2float32( it);
+    data.altitude = bytes2float32( it);
+
+    data.speed = bytes2float32( it);
+    data.course = bytes2float32( it);
+    data.hdop = bytes2float32( it);
 
     return data;
 }
@@ -131,15 +156,14 @@ function getSensors( it) {
 
     while( it.index < it.buffer.length) {
         ptype =  uint8( it);
-        status =  uint8( it)
-        //it.index += 2;
 
         switch( ptype) {
             case PID_EOL:
             break;
-            case PID_ID:
-            break;
 
+            case PID_ID:
+                rc.data.id = getId( it);
+            break;
             case PID_NODE:
                 rc.data.node = getNode( it);
             break;
@@ -156,6 +180,10 @@ function getSensors( it) {
 
             case PID_GPS:
                 rc.data.gps = getGps( it);
+            break;
+
+            case PID_FILL:
+                rc.data.level = getFill( it);
             break;
 
             default:
@@ -195,7 +223,9 @@ function decodeUplink(input) {
  * @returns {{bytes: number[]}} Byte array containing the downlink payload.
  */
 function encodeDownlink(input) {
+  
+
   return {
-    // bytes: [225, 230, 255, 0]
+    bytes: [ 0x02, 0x00, 0x00, 0x01, 0x02, 0x03 ]
   };
 }
