@@ -69,6 +69,11 @@ struct LoraToF : LoraSensor {
     int16_t dist;
 };
 
+// Calculated typed
+struct LoraFill : LoraSensor {
+    uint16_t percent;
+};
+
 class SensorData {
     public:
 
@@ -82,6 +87,9 @@ class SensorData {
             TOF      = 0x12,
 
             GPS      = 0x20,
+
+            // calculated values
+            FILL     = 0xC0,
         };
 
         SensorData( uint8_t size);
