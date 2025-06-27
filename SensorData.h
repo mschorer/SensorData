@@ -18,6 +18,8 @@
 #define STS_RELAX   0x20
 #define STS_DCARE   0x00
 
+#define STS_MSHIFT(B)  (( B & STS_MMASK) >> 5)
+
 #define STS_UDDMASK 0x1f
 #define STS_NULL    0x00
 
@@ -69,7 +71,7 @@ struct LoraToF : LoraSensor {
     int16_t dist;
 };
 
-// Calculated typed
+// Calculated types
 struct LoraFill : LoraSensor {
     uint16_t percent;
 };

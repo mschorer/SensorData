@@ -13,7 +13,7 @@ const PID_TOF      = 0x12;
 
 const PID_GPS      = 0x20;
 
-const PID_FILL      = 0xC0
+const PID_FILL     = 0xC0
 
 
 function uint8( it) {
