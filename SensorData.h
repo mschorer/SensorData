@@ -40,6 +40,7 @@ struct LoraNode : LoraSensor {
 struct LoraGps : LoraSensor {
     uint8_t sats;
     uint8_t flags;
+    uint16_t age;
 
     uint32_t date;
     uint32_t time;
@@ -80,7 +81,7 @@ class SensorData {
     public:
 
         enum SensorType:uint8_t {
-            EOL      = 0x00,
+            STATUS   = 0x00,
             ID       = 0x01,
             NODE     = 0x02,
 

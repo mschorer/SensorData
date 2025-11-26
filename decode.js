@@ -3,7 +3,7 @@
  * 
  */
 
-const PID_EOL      = 0x00;
+const PID_STATUS   = 0x00;
 const PID_ID       = 0x01;
 const PID_NODE     = 0x02;
 
@@ -158,7 +158,8 @@ function getSensors( it) {
         ptype =  uint8( it);
 
         switch( ptype) {
-            case PID_EOL:
+            case PID_STATUS:
+                rc.data.status = getSensor( it);
             break;
 
             case PID_ID:
